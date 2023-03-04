@@ -1,6 +1,15 @@
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+export interface DiaryItem {
+    id: number;
+    title: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+    imageUrl: string;
+}
+
 type RootStackParamList = {
     DiaryStack: NativeStackScreenProps<DiaryStackParamList>;
     AddDiary: undefined;
@@ -8,7 +17,7 @@ type RootStackParamList = {
 
 type DiaryStackParamList = {
     DiaryList: undefined;
-    DiaryDetail: undefined;
+    DiaryDetail: { item: DiaryItem };
     Settings: undefined;
 };
 
