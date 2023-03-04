@@ -9,7 +9,14 @@ interface IUserInfo {
     lastLoginAt: string;
 }
 
-export const userInfo = atom<IUserInfo | null>({
+export const userInfo = atom<IUserInfo>({
     key: 'MAIN/USER_INFO',
-    default: null,
+    default: {
+        name: '',
+        profileImage: '',
+        uid: '',
+        password: '',
+        createdAt: '',
+        lastLoginAt: '',
+    },
 });

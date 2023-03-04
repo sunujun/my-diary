@@ -15,7 +15,6 @@ export const SplashView = ({ onFinishLoad }: { onFinishLoad: () => void }) => {
         async (idToken: string | null) => {
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
             const result = await auth().signInWithCredential(googleCredential);
-            console.log(result);
             const userDatabaseRefKey = `/users/${result.user.uid}`;
             const userResult = await database()
                 .ref(userDatabaseRefKey)

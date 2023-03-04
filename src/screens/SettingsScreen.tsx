@@ -1,23 +1,42 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
+import { useRecoilState } from 'recoil';
 import { useNavigation } from '@react-navigation/native';
+import database from '@react-native-firebase/database';
 import { Header } from '../components/Header/Header';
 import { Spacer } from '../components/Spacer';
-import { useRecoilState } from 'recoil';
 import { userInfo as userInfoState } from '../states/userInfo';
 import { Divider } from '../components/Divider';
 import { Typography } from '../components/Typography';
 import { Button } from '../components/Button';
 import { RemoteImage } from '../components/RemoteImage';
+import { useImagePickAndUpload } from '../hooks/useImagePickAndUpload';
 
 export const SettingsScreen = () => {
-    const [userInfo] = useRecoilState(userInfoState);
+    const [userInfo, setUserInfo] = useRecoilState(userInfoState);
     const navigation = useNavigation();
+    const runImagePickAndUpload = useImagePickAndUpload();
 
     const onPressBack = useCallback(() => {
         navigation.goBack();
     }, [navigation]);
-    const onPressProfile = useCallback(() => {}, []);
+    const onPressProfile = useCallback(async () => {
+        const result = await runImagePickAndUpload();
+        if (result) {
+            const imageUrl = result;
+            const userDB = `/users/${userInfo.uid}`;
+            // 프로필 이미지로 선택한 것 업로드
+            setUserInfo(prevState => {
+                return {
+                    ...prevState,
+                    profileImage: imageUrl,
+                };
+            });
+            await database().ref(userDB).update({
+                profileImage: imageUrl,
+            });
+        }
+    }, [runImagePickAndUpload, userInfo.uid, setUserInfo]);
 
     return (
         <View style={{ flex: 1 }}>
