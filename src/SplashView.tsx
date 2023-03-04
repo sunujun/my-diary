@@ -2,13 +2,36 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 
-export const SplashView = () => {
+export const SplashView = ({ onFinishLoad }: { onFinishLoad: () => void }) => {
     const [showLoginButton, setShowLoginButton] = useState(false);
     const signInUserIdentify = async (idToken: string | null) => {
         const googleCredential = auth.GoogleAuthProvider.credential(idToken);
         const result = await auth().signInWithCredential(googleCredential);
         console.log(result);
+        const userDatabaseRefKey = `/users/${result.user.uid}`;
+        const userResult = await database()
+            .ref(userDatabaseRefKey)
+            .once('value')
+            .then(snapshot => {
+                return snapshot.val();
+            });
+        const now = new Date().toISOString();
+        if (userResult === null) {
+            await database().ref(userDatabaseRefKey).set({
+                name: result.additionalUserInfo?.profile?.name,
+                profileImage: result.additionalUserInfo?.profile?.picture,
+                uid: result.user.uid,
+                password: '',
+                createdAt: now,
+                lastLoginAt: now,
+            });
+        }
+        await database().ref(userDatabaseRefKey).update({
+            lastLoginAt: now,
+        });
+        onFinishLoad();
     };
 
     const onPressGoogleLogin = async () => {
