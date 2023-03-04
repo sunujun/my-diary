@@ -11,38 +11,41 @@ export const SplashView = ({ onFinishLoad }: { onFinishLoad: () => void }) => {
 
     const [showLoginButton, setShowLoginButton] = useState(false);
 
-    const signInUserIdentify = async (idToken: string | null) => {
-        const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-        const result = await auth().signInWithCredential(googleCredential);
-        console.log(result);
-        const userDatabaseRefKey = `/users/${result.user.uid}`;
-        const userResult = await database()
-            .ref(userDatabaseRefKey)
-            .once('value')
-            .then(snapshot => {
-                return snapshot.val();
-            });
-        const now = new Date().toISOString();
-        if (userResult === null) {
-            await database().ref(userDatabaseRefKey).set({
-                name: result.additionalUserInfo?.profile?.name,
-                profileImage: result.additionalUserInfo?.profile?.picture,
-                uid: result.user.uid,
-                password: '',
-                createdAt: now,
+    const signInUserIdentify = useCallback(
+        async (idToken: string | null) => {
+            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+            const result = await auth().signInWithCredential(googleCredential);
+            console.log(result);
+            const userDatabaseRefKey = `/users/${result.user.uid}`;
+            const userResult = await database()
+                .ref(userDatabaseRefKey)
+                .once('value')
+                .then(snapshot => {
+                    return snapshot.val();
+                });
+            const now = new Date().toISOString();
+            if (userResult === null) {
+                await database().ref(userDatabaseRefKey).set({
+                    name: result.additionalUserInfo?.profile?.name,
+                    profileImage: result.additionalUserInfo?.profile?.picture,
+                    uid: result.user.uid,
+                    password: '',
+                    createdAt: now,
+                    lastLoginAt: now,
+                });
+            }
+            const userInfo = await database()
+                .ref(userDatabaseRefKey)
+                .once('value')
+                .then(snapshot => snapshot.val());
+            setUserInfo(userInfo);
+            await database().ref(userDatabaseRefKey).update({
                 lastLoginAt: now,
             });
-        }
-        const userInfo = await database()
-            .ref(userDatabaseRefKey)
-            .once('value')
-            .then(snapshot => snapshot.val());
-        setUserInfo(userInfo);
-        await database().ref(userDatabaseRefKey).update({
-            lastLoginAt: now,
-        });
-        onFinishLoad();
-    };
+            onFinishLoad();
+        },
+        [onFinishLoad, setUserInfo],
+    );
 
     const onPressGoogleLogin = async () => {
         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
@@ -57,7 +60,7 @@ export const SplashView = ({ onFinishLoad }: { onFinishLoad: () => void }) => {
         } catch (e) {
             setShowLoginButton(true);
         }
-    }, []);
+    }, [signInUserIdentify]);
 
     const googleSignInConfigure = () => {
         GoogleSignin.configure({
