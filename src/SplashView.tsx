@@ -1,11 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { useSetRecoilState } from 'recoil';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
+import { userInfo as userInfoState } from './states/userInfo';
 
 export const SplashView = ({ onFinishLoad }: { onFinishLoad: () => void }) => {
+    const setUserInfo = useSetRecoilState(userInfoState);
+
     const [showLoginButton, setShowLoginButton] = useState(false);
+
     const signInUserIdentify = async (idToken: string | null) => {
         const googleCredential = auth.GoogleAuthProvider.credential(idToken);
         const result = await auth().signInWithCredential(googleCredential);
@@ -28,6 +33,11 @@ export const SplashView = ({ onFinishLoad }: { onFinishLoad: () => void }) => {
                 lastLoginAt: now,
             });
         }
+        const userInfo = await database()
+            .ref(userDatabaseRefKey)
+            .once('value')
+            .then(snapshot => snapshot.val());
+        setUserInfo(userInfo);
         await database().ref(userDatabaseRefKey).update({
             lastLoginAt: now,
         });

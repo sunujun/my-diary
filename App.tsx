@@ -1,12 +1,15 @@
 import React from 'react';
+import { RecoilRoot } from 'recoil';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootApp } from './src/RootApp';
 
 function App(): JSX.Element {
     return (
-        <SafeAreaProvider>
-            <RootApp />
-        </SafeAreaProvider>
+        <RecoilRoot>
+            <SafeAreaProvider>
+                <RootApp />
+            </SafeAreaProvider>
+        </RecoilRoot>
     );
 }
 
