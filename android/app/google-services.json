@@ -7,12 +7,20 @@
     "client": [
         {
             "client_info": {
-                "mobilesdk_app_id": "1:164839873698:android:0c598a31b6c006c6c84bfb",
+                "mobilesdk_app_id": "1:164839873698:android:d38fdfd7d8a797f9c84bfb",
                 "android_client_info": {
                     "package_name": "com.mydiary"
                 }
             },
             "oauth_client": [
+                {
+                    "client_id": "164839873698-bo4a820ka95pkn7smd5luoo8vmdqb2q8.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                        "package_name": "com.mydiary",
+                        "certificate_hash": "cc33adc8f9709af959e5ff1990582d71e893cba0"
+                    }
+                },
                 {
                     "client_id": "164839873698-heqtsijrb9ml45b3nq1v2aoi82g61asf.apps.googleusercontent.com",
                     "client_type": 3

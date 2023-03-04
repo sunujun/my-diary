@@ -11,6 +11,6 @@ export const RootApp = () => {
             <RootStackNavigation />
         </NavigationContainer>
     ) : (
-        <SplashView onFinishLoad={() => setInitialized(true)} />
+        <SplashView />
     );
 };
