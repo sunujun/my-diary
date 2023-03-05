@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { View, FlatList, useWindowDimensions } from 'react-native';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import database from '@react-native-firebase/database';
@@ -18,9 +18,9 @@ export const DiaryListScreen = () => {
     const navigation = useNavigation<DiaryStackScreenProps<'DiaryList'>['navigation']>();
     const safeAreaInset = useSafeAreaInsets();
     const { width } = useWindowDimensions();
-    const userInfo = useRecoilValue(userInfoState);
 
-    const [diaryList, setDiaryList] = useRecoilState(diaryListState);
+    // const userInfo = useRecoilValue(userInfoState);
+    const diaryList = useRecoilValue(diaryListState);
 
     const onPressSettings = useCallback(() => {
         navigation.navigate('Settings');
@@ -30,17 +30,17 @@ export const DiaryListScreen = () => {
         navigation.navigate('AddDiary');
     }, [navigation]);
 
-    const refreshDiaryList = useCallback(async () => {
-        const diaryListDB = await database()
-            .ref(`diary/${userInfo.uid}`)
-            .once('value')
-            .then(snapshot => snapshot.val());
-        setDiaryList(Object.keys(diaryListDB).map(item => diaryListDB[item]));
-    }, [setDiaryList, userInfo.uid]);
+    // const refreshDiaryList = useCallback(async () => {
+    //     const diaryListDB = await database()
+    //         .ref(`diary/${userInfo.uid}`)
+    //         .once('value')
+    //         .then(snapshot => snapshot.val());
+    //     setDiaryList(Object.keys(diaryListDB).map(item => diaryListDB[item]));
+    // }, [setDiaryList, userInfo.uid]);
 
-    useEffect(() => {
-        refreshDiaryList();
-    }, [refreshDiaryList]);
+    // useEffect(() => {
+    //     refreshDiaryList();
+    // }, [refreshDiaryList]);
 
     return (
         <View style={{ flex: 1 }}>
