@@ -11,6 +11,7 @@ type DiaryStackParamList = {
     DiaryList: undefined;
     DiaryDetail: { item: IDiary };
     Settings: undefined;
+    AddPassword: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;
