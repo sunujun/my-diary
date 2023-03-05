@@ -47,13 +47,13 @@ export const SplashView = ({ onFinishLoad }: { onFinishLoad: () => void }) => {
                 .once('value')
                 .then(snapshot => snapshot.val());
             setUserInfo(_userInfo);
+            await runGetDiaryList(_userInfo);
             await database().ref(userDatabaseRefKey).update({
                 lastLoginAt: now,
             });
-            await runGetDiaryList(userInfo);
             onFinishLoad();
         },
-        [onFinishLoad, runGetDiaryList, setUserInfo, userInfo],
+        [onFinishLoad, runGetDiaryList, setUserInfo],
     );
 
     const onPressGoogleLogin = async () => {
