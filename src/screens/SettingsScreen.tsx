@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import database from '@react-native-firebase/database';
 import { Header } from '../components/Header/Header';
 import { Spacer } from '../components/Spacer';
-import { userInfo as userInfoState } from '../states/userInfo';
+import { userInfoState } from '../states/userInfoState';
 import { Divider } from '../components/Divider';
 import { Typography } from '../components/Typography';
 import { Button } from '../components/Button';

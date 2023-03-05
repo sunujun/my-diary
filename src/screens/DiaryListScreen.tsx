@@ -1,53 +1,46 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View, FlatList, useWindowDimensions } from 'react-native';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import database from '@react-native-firebase/database';
 import { Header } from '../components/Header/Header';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
-import { DiaryItem, DiaryStackScreenProps } from '../navigation/types';
 import { RemoteImage } from '../components/RemoteImage';
 import { Spacer } from '../components/Spacer';
 import { Typography } from '../components/Typography';
+import { DiaryStackScreenProps } from '../navigation/types';
+import { diaryListState } from '../states/diaryListState';
+import { userInfoState } from '../states/userInfoState';
 
 export const DiaryListScreen = () => {
     const navigation = useNavigation<DiaryStackScreenProps<'DiaryList'>['navigation']>();
     const safeAreaInset = useSafeAreaInsets();
     const { width } = useWindowDimensions();
+    const userInfo = useRecoilValue(userInfoState);
 
-    const [data, setData] = useState<DiaryItem[]>([
-        {
-            id: 0,
-            title: 'TITLE_01',
-            content: 'CONTENT_01',
-            createdAt: '2022-01-01',
-            updatedAt: '2022-01-01',
-            imageUrl: 'https://docs.expo.dev/static/images/tutorial/background-image.png',
-        },
-        {
-            id: 1,
-            title: 'TITLE_02',
-            content: 'CONTENT_02',
-            createdAt: '2022-01-01',
-            updatedAt: '2022-01-01',
-            imageUrl: 'https://docs.expo.dev/static/images/tutorial/background-image.png',
-        },
-        {
-            id: 2,
-            title: 'TITLE_03',
-            content: 'CONTENT_03',
-            createdAt: '2022-01-01',
-            updatedAt: '2022-01-01',
-            imageUrl: 'https://docs.expo.dev/static/images/tutorial/background-image.png',
-        },
-    ]);
+    const [diaryList, setDiaryList] = useRecoilState(diaryListState);
 
     const onPressSettings = useCallback(() => {
         navigation.navigate('Settings');
     }, [navigation]);
+
     const onPressAdd = useCallback(() => {
         navigation.navigate('AddDiary');
     }, [navigation]);
+
+    const refreshDiaryList = useCallback(async () => {
+        const diaryListDB = await database()
+            .ref(`diary/${userInfo.uid}`)
+            .once('value')
+            .then(snapshot => snapshot.val());
+        setDiaryList(Object.keys(diaryListDB).map(item => diaryListDB[item]));
+    }, [setDiaryList, userInfo.uid]);
+
+    useEffect(() => {
+        refreshDiaryList();
+    }, [refreshDiaryList]);
 
     return (
         <View style={{ flex: 1 }}>
@@ -59,7 +52,7 @@ export const DiaryListScreen = () => {
                     <Header.Button iconName="settings" onPress={onPressSettings} />
                 </Header>
                 <FlatList
-                    data={data}
+                    data={diaryList}
                     contentContainerStyle={{
                         paddingHorizontal: 24,
                         paddingVertical: 32,
@@ -71,10 +64,10 @@ export const DiaryListScreen = () => {
                                     navigation.navigate('DiaryDetail', { item });
                                 }}>
                                 <View style={{ paddingVertical: 12 }}>
-                                    {item.imageUrl !== null && (
+                                    {item.photoUrl !== null && (
                                         <>
                                             <RemoteImage
-                                                url={item.imageUrl}
+                                                url={item.photoUrl}
                                                 width={width - 24 * 2}
                                                 height={(width - 24 * 2) / 2}
                                                 style={{ borderRadius: 8 }}
@@ -88,7 +81,9 @@ export const DiaryListScreen = () => {
                                             <Spacer space={4} />
                                             <Typography fontSize={12}>{item.content}</Typography>
                                         </View>
-                                        <Typography fontSize={12}>{item.updatedAt}</Typography>
+                                        <Typography fontSize={12}>{`${new Date(item.date).getFullYear()}-${
+                                            new Date(item.date).getMonth() + 1
+                                        }-${new Date(item.date).getDate()}`}</Typography>
                                     </View>
                                 </View>
                             </Button>

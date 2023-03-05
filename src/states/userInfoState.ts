@@ -1,6 +1,6 @@
 import { atom } from 'recoil';
 
-interface IUserInfo {
+export interface IUserInfo {
     name: string;
     profileImage: string;
     uid: string;
@@ -9,7 +9,7 @@ interface IUserInfo {
     lastLoginAt: string;
 }
 
-export const userInfo = atom<IUserInfo>({
+export const userInfoState = atom<IUserInfo>({
     key: 'MAIN/USER_INFO',
     default: {
         name: '',

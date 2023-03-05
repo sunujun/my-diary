@@ -4,7 +4,7 @@ import { useSetRecoilState } from 'recoil';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
-import { userInfo as userInfoState } from './states/userInfo';
+import { userInfoState } from './states/userInfoState';
 
 export const SplashView = ({ onFinishLoad }: { onFinishLoad: () => void }) => {
     const setUserInfo = useSetRecoilState(userInfoState);
